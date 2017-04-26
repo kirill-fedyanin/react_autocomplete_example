@@ -1,8 +1,69 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Autocomplete from 'react-autocomplete';
- const styles = {
+import fetch from 'isomorphic-fetch';
+const styles = getStyles();
+
+class App extends Component {
+  constructor(){
+    super()
+    this.state = {
+      selected: {
+        name: ''
+      },
+      items: []
+    }
+    // this.items = [{name: 'Abby', id: 'a'}, {name: 'Road', id: 'r'}]
+  }
+
+  handleChange = (event, value) => {
+    fetch('http://localhost:3000/api_local/parties',{
+      headers: {'Content-Type': 'application/json'},
+      method: 'POST',
+      body: JSON.stringify({query: value})
+    }).then((response) => response.json())
+      .then((items) => {
+        console.log(items[0])
+        this.setState({...this.state, items})
+      })
+    this.setState({...this.state, selected: {name:value}})
+  }
+
+  handleSelect = (selected) => {
+    this.setState({...this.state, selected})
+  }
+
+  shouldRender(item, value){
+    // return item.indexOf(value) !== -1;
+    return true
+  }
+
+  render() {
+    return (
+      <div>
+        <label>Адрес</label>
+        <Autocomplete
+          value={this.state.selected.name}
+          getItemValue={(item) => item}
+          items={this.state.items}
+          onChange={this.handleChange}
+          onSelect={this.handleSelect}
+          shouldItemRender={this.shouldRender}
+          renderItem={(item, isHighlighted) => (
+                        <div
+                          style={isHighlighted ? styles.highlightedItem : styles.item}
+                        >{item.name + item.inn}</div>
+                      )}
+         ></Autocomplete>
+        <div> {this.state.selected.name} </div>
+        <div> {this.state.selected.inn} </div>
+      </div>
+    );
+  }
+}
+
+function getStyles(){
+  return {
       item: {
             padding: '2px 6px',
             cursor: 'default'
@@ -19,36 +80,5 @@ import Autocomplete from 'react-autocomplete';
             border: 'solid 1px #ccc'
           }
   }
-
-class App extends Component {
-  constructor(){
-    super()
-    this.state = {value: null}
-    // this.items = [{name: 'Abby', id: 'a'}, {name: 'Road', id: 'r'}]
-    this.items = ['aaha', 'uuhu', 'sdfsdf', 'aeuiqweu', 'asdifuisdfu', 'tyuweriwer',
-      'askjdfj', 'kdjfksdf', 'sdkfjsdfjx']
-  }
-   render() {
-    return (
-      <div>
-        <label>Адрес</label>
-        <Autocomplete
-          value={this.state.value}
-          getItemValue={(item) => item}
-          items={this.items}
-          onChange={(event, value) => this.setState({ value })}
-          onSelect={value => this.setState({ value })}
-          shouldItemRender={(state, value) => (state.indexOf(value) !== -1)}
-          renderItem={(item, isHighlighted) => (
-                        <div
-                          style={isHighlighted ? styles.highlightedItem : styles.item}
-                        >{item}</div>
-                      )}
-         ></Autocomplete>
-        <div> {this.state.value} </div>
-      </div>
-    );
-  }
 }
-
 export default App;
