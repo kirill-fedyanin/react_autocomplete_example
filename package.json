@@ -8,8 +8,10 @@
   },
   "devDependencies": {
     "react-scripts": "0.9.5",
-    "react-autocomplete": "1.5.0",
-    "isomorphic-fetch": "2.2.1"
+    "react-autocomplete": "^1.5.0",
+    "isomorphic-fetch": "^2.2.1",
+    "redux": "^3.5.2",
+    "react-redux": "^5.0.2"
   },
   "scripts": {
     "start": "PORT=3001 react-scripts start",
